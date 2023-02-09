@@ -59,7 +59,7 @@ class Deck {
       "K",
     ];
     this.suits = ["spades", "hearts", "diamonds", "clubs"];
-    // for (const suit of this.suits) {
+    // ALTERNATE WAY for (const suit of this.suits) {
     //   // goes through all suits
     //   for (const rank of this.ranks) {
     //     // goes through all ranks
@@ -67,8 +67,10 @@ class Deck {
     //   }
     // }
 
-    for (let i = 0; i < this.suits.length; i++) { // i = index of suits array
-      for (let j = 0; j < this.ranks.length; j++) { // j = index of ranks array
+    for (let i = 0; i < this.suits.length; i++) {
+      // i = index of suits array
+      for (let j = 0; j < this.ranks.length; j++) {
+        // j = index of ranks array
         this.allCards.push(new Card(this.ranks[j], this.suits[i]));
       }
     }
@@ -78,7 +80,8 @@ class Deck {
     // fisher yates shuffle// shuffleCards() will shuffle the cards in the deck. Search online for a shuffle function. You do not need to come up with this yourself.
     for (let i = this.allCards.length - 1; i > 0; i--) {
       let j = Math.floor(Math.random() * (i + 1));
-      [this.allCards[i], this.allCards[j]] = [ // swapping two cards(two indexes) from the array every time the loop repeats. shuffle 2 cards 52 times
+      [this.allCards[i], this.allCards[j]] = [
+        // swapping two cards(two indexes) from the array every time the loop repeats. shuffle 2 cards 52 times
         this.allCards[j],
         this.allCards[i],
       ];
@@ -87,40 +90,60 @@ class Deck {
 
   draw() {
     // draw() will remove and return a card from the deck.
+    let drawnCard = this.allCards[0];
     this.allCards.shift();
+    return drawnCard;
+  }
+
+  deal(numHands, cardsPerHand) {
+    // deal(numHands, cardsPerHand) will deal cardsPerHand cards to numHands hands.
+    // for every person
+    for (let num = 1; num <= numHands; num++) {
+      // create instance of new hand
+      let newHand = new Hand([]);
+
+      // while the amount of cards is less than what is supposed to be dealt, draw card and add it to new hand
+      for (let cardsInHand = 0; cardsInHand < cardsPerHand; cardsInHand++) {
+        let topCard = this.draw();
+        newHand.addCard(topCard);
+      }
+      console.log(newHand);
+    }
   }
 }
-
-// deal(numHands, cardsPerHand) will deal cardsPerHand cards to numHands hands.
 
 //***************** TESTING AREA ***********************//
 
 // creates new card
-const firstCard = new Card("A", "spades");
-const secondCard = new Card("3", "hearts");
-const thirdCard = new Card("J", "clubs");
-const fourthCard = new Card("5", "diamonds");
+// const firstCard = new Card("A", "spades");
+// const secondCard = new Card("3", "hearts");
+// const thirdCard = new Card("J", "clubs");
+// const fourthCard = new Card("5", "diamonds");
 
-// adds new card to hand
-let hand = new Hand([]);
+// // adds new card to hand
+// let hand = new Hand([]);
 
-hand.addCard(firstCard); //! WORKS
-hand.addCard(secondCard);
-hand.addCard(thirdCard);
-hand.addCard(fourthCard);
-console.log(hand);
+// hand.addCard(firstCard); //! WORKS
+// hand.addCard(secondCard);
+// hand.addCard(thirdCard);
+// hand.addCard(fourthCard);
+// console.log(hand);
 
-hand.playCard(thirdCard); //! WORKS
-console.log(hand);
+// hand.playCard(thirdCard); //! WORKS
+// console.log(hand);
 //Hand cards: [Card { rank: 'A', suit: 'spades' },Card { rank: '3', suit: 'hearts' }]
 
 const deck = new Deck([], [], []); //new instance of deck with 3 arrays
 
 deck.generateCards(); //! WORKS
-console.log(deck.allCards);
-
-// deck.shuffleCards(); // shuffles deck //! WORKS
 // console.log(deck.allCards);
 
-// deck.draw(); // removes a card from the deck  //! WORKS
+deck.shuffleCards(); // shuffles deck //! WORKS
+// console.log(deck.allCards);
+
+// removes a card from the deck  //! WORKS
+// console.log(deck.allCards);
+// console.log(deck.draw());
+
+deck.deal(4, 13);
 // console.log(deck.allCards);
