@@ -1,14 +1,29 @@
+//! PHASE ONE BASE CLASSES //
+const rankPointValue = {
+  2: 2,
+  3: 3,
+  4: 4,
+  5: 5,
+  6: 6,
+  7: 7,
+  8: 8,
+  9: 9,
+  10: 10,
+  J: 11,
+  Q: 12,
+  K: 13,
+  A: 14,
+};
 //* Card Class *//
-// Write a Card class with two properties: rank and suit.
 class Card {
   constructor(rank, suit) {
     this.rank = rank;
     this.suit = suit;
+    this.rankValue = rankPointValue[rank];
   }
 }
-
+console.log(new Card("A", "spades"));
 //* Hand Class *//
-// A Hand has one property: an array of cards.
 class Hand {
   constructor(cardsArr) {
     this.cardsArr = cardsArr;
@@ -32,19 +47,17 @@ class Hand {
 }
 
 //* Deck Class *//
-//A Deck has an array of possible card ranks, an array of possible card suits, and an array of cards. 3 array parameters
 class Deck {
   constructor(ranks, suits, allCards) {
     this.ranks = ranks;
     this.suits = suits;
-    this.allCards = allCards;
+    this.allCards = [];
   }
 
   generateCards() {
     // generateCards() will populate the deck with an initial array of cards.
     // deck will be 13 ranks with 4 suits each (52 cards)
     this.ranks = [
-      "A",
       "2",
       "3",
       "4",
@@ -57,21 +70,16 @@ class Deck {
       "J",
       "Q",
       "K",
+      "A",
     ];
     this.suits = ["spades", "hearts", "diamonds", "clubs"];
-    // ALTERNATE WAY for (const suit of this.suits) {
-    //   // goes through all suits
-    //   for (const rank of this.ranks) {
-    //     // goes through all ranks
-    //     this.allCards.push(new Card(rank, suit)); //adds new card instance to array of allcards
-    //   }
-    // }
 
     for (let i = 0; i < this.suits.length; i++) {
       // i = index of suits array
       for (let j = 0; j < this.ranks.length; j++) {
         // j = index of ranks array
         this.allCards.push(new Card(this.ranks[j], this.suits[i]));
+        // adds new card to deck for as many combinations there are for suits and ranks
       }
     }
   }
@@ -90,13 +98,19 @@ class Deck {
 
   draw() {
     // draw() will remove and return a card from the deck.
-    let drawnCard = this.allCards[0];
-    this.allCards.shift();
-    return drawnCard;
+    if (this.allCards.length > 0) {
+      // as long as there are cards in deck
+      let drawnCard = this.allCards[0]; // first card in array assigned
+      this.allCards.shift(); // removes first card in array
+      return drawnCard; // returns that first card
+    } else {
+      return null; // returns null if there are no more cards
+    }
   }
 
   deal(numHands, cardsPerHand) {
     // deal(numHands, cardsPerHand) will deal cardsPerHand cards to numHands hands.
+    let allPlayers = []; // store all new hands in array
     // for every person
     for (let num = 1; num <= numHands; num++) {
       // create instance of new hand
@@ -107,43 +121,73 @@ class Deck {
         let topCard = this.draw();
         newHand.addCard(topCard);
       }
-      console.log(newHand);
+      allPlayers.push(newHand); // assigns a player a new hand
     }
+    return allPlayers;
   }
 }
 
+//! PHASE TWO GAME MECHANICS ////
+
+class Player {
+  constructor(newPlayer) {
+    this.newPlayer = newPlayer;
+  }
+}
+
+class Game {
+  constructor(numPlayers, cardsPerPlayer) {
+    this.numPlayers = numPlayers;
+    this.cardsPerPlayer = cardsPerPlayer;
+  }
+
+  start() {
+    // create and shuffle new deck of cards
+    let newGameDeck = new Deck([], [], []);
+    newGameDeck.generateCards();
+    newGameDeck.shuffleCards();
+
+    // 1. Deal cards -> assign hand to a player
+    this.playerHands = newGameDeck.deal(this.numPlayers, this.cardsPerPlayer);
+    // console.log(this.playerHands[0]); //displays first players hand
+    return this.playerHands;
+  }
+
+  playerTurn() {
+    let allCardsPlayed = []; // create array and store the cards that are played
+    // 2. Every player will play the first card in their hand
+    for (let i = 1; i <= this.numPlayers; i++) {
+      let currentCard = this.playerHands[0];
+      console.log(
+        `Player ${i} played: ${currentCard.cardsArr[0].rank} of ${currentCard.cardsArr[0].suit}`
+      );
+      let cardPlayed = currentCard.playCard(currentCard.cardsArr[0]); //plays card and removes card from hand
+      allCardsPlayed.push(cardPlayed);
+    }
+    console.log(allCardsPlayed);
+    return allCardsPlayed; //return array of cards played
+  }
+
+  compareCards(allCardsPlayed) {
+    let valueArr = [];
+    // 3. Whichever player has the highest card (add values?) gains a point
+    for (let i = 0; i < allCardsPlayed.length; i++) {
+      let cardValue = Object.keys(allCardsPlayed[i].rankValue);
+      valueArr.push(cardValue);
+      console.log(cardValue);
+    }
+    console.log(valueArr);
+  }
+}
+
+// 4. Keep playing until players have no cards left
+// 5. Player with most points wins!
+
+//* Start Game *//
+let newGame = new Game(2, 26);
+newGame.start();
+newGame.playerTurn();
+newGame.compareCards();
+// console.log(newGame.start());
+
 //***************** TESTING AREA ***********************//
-
-// creates new card
-// const firstCard = new Card("A", "spades");
-// const secondCard = new Card("3", "hearts");
-// const thirdCard = new Card("J", "clubs");
-// const fourthCard = new Card("5", "diamonds");
-
-// // adds new card to hand
-// let hand = new Hand([]);
-
-// hand.addCard(firstCard); //! WORKS
-// hand.addCard(secondCard);
-// hand.addCard(thirdCard);
-// hand.addCard(fourthCard);
-// console.log(hand);
-
-// hand.playCard(thirdCard); //! WORKS
-// console.log(hand);
-//Hand cards: [Card { rank: 'A', suit: 'spades' },Card { rank: '3', suit: 'hearts' }]
-
-const deck = new Deck([], [], []); //new instance of deck with 3 arrays
-
-deck.generateCards(); //! WORKS
-// console.log(deck.allCards);
-
-deck.shuffleCards(); // shuffles deck //! WORKS
-// console.log(deck.allCards);
-
-// removes a card from the deck  //! WORKS
-// console.log(deck.allCards);
-// console.log(deck.draw());
-
-deck.deal(4, 13);
-// console.log(deck.allCards);

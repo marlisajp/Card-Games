@@ -83,4 +83,11 @@ A "Draw" button adds a card to the next player's hand.
 A "Reset" button resets the Game to an initial state.
 What other mechanics does your game have?
 
+## High Card Game
+1. Deal all cards to 2 players 26 each
+2. Player 1 & 2 plays their top cards
+3. Whichever player has the highest card (add values?) gains a point
+4. Remove cards played
+5. Keep playing until players have no cards left
+6. Player with most points wins!
 
